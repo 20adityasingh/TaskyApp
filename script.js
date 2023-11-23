@@ -58,5 +58,28 @@ const updateLocalStorage=() => {
         JSON.stringify({
             tasks:state.taskList,
         })
-    )
-}
+    );
+};
+
+const LoadInitialData = () => {
+    const localStoragecopy=JSON.parse(localStorage.tasks);
+
+    if(localStoragecopy) state.taskList=localStoragecopy.tasks;
+
+    state.taskList.map((cardDate)=>{
+        taskContent.insertAdjacentHTML("beforeend",htmlTaskContent(cardDate));
+    });
+};
+
+const handleSubmit=(event)=>{
+    const id =`${Date.now}`;
+    const input={
+        url:document.getElementById("imageurl").value,
+        title:document.getElementById("tasktitle").value,
+        type:document.getElementById("tasktype").value,
+        description:document.getElementById("typedesc").value
+    };
+    taskContent.insertAdjacentHTML("beforeend",htmlTaskContent({...input, id}));
+    state.taskList.push({...input, id});
+    updateLocalStorage();
+};
