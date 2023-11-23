@@ -77,7 +77,7 @@ const handleSubmit=(event)=>{
         url:document.getElementById("imageurl").value,
         title:document.getElementById("tasktitle").value,
         type:document.getElementById("tasktype").value,
-        description:document.getElementById("typedesc").value
+        description:document.getElementById("taskdesc").value
     };
     taskContent.insertAdjacentHTML("beforeend",htmlTaskContent({...input, id}));
     state.taskList.push({...input, id});
