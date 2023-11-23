@@ -11,16 +11,20 @@ const taskModal= document.querySelector(".task__modal_body");
  const htmlTaskContent=({id, title,description, type, url}) => `
     <div class="col-md-6 col-lg-4 mt-4" id=${id}>
         <div class="card shadow-sm task__card">
-            <div class="card-header d-flex justify-content-end task__card_header">
-                <button type="button" class="btn btn-outline-primary me-1.5" name=${id}></button>
-                <i class="fas fa-pencil-alt" name=${id}></i>
-                <button type="button" class="btn btn-outline-danger me-1.5" name=${id}></button>
-                <i class="fas fa-trash-alt" name=${id}></i>
+            <div class="card-header d-flex justify-content-end  gap-2 task__card_header">
+                <button type="button" class="btn btn-outline-primary me-1.5" name=${id}>
+                    <i class="fas fa-pencil-alt" name=${id}></i>
+                </button>
+                
+                <button type="button" class="btn btn-outline-danger me-1.5" name=${id}>
+                    <i class="fas fa-trash-alt" name=${id}></i>
+                </button>
+                
             </div>
 
             <div class="card-body task__card_body">
                 ${
-                    url&&
+                    url &&
                     `<img width="100%" src=${url} alt="Card Image" class="card-img-top md-3 rounded-lg" />`
                 }
                 <h4 class="card-title task__card_bodytitle">${title}</h4>
@@ -29,9 +33,8 @@ const taskModal= document.querySelector(".task__modal_body");
                     <span class="badge bg-primary m-1>${type}</span>
                 </div>
             </div>
-
             <div class="card-footer">
-                <button type="button" class="btn btn-outline-primary float-right" data-bs-toggle="modal" data-bs-target="#showTask">Open Task</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#showTask">Open Task</button>
             </div>
         </div>
     </div>
