@@ -1,17 +1,17 @@
-const state ={
+var state ={
     taskList: [],
 };
 
-const taskContent= document.querySelector(".task_content");
-const taskModal= document.querySelector(".task__modal_body");
+var taskContent= document.querySelector(".task_content");
+var taskModal= document.querySelector(".task__modal_body");
 
 // Templetes for cards on screen dynamically
- const htmlTaskContent=({id, title,description, type, url}) => `
+ var htmlTaskContent=({id, title,description, type, url}) => `
     <div class="col-md-6 col-lg-4 mt-4" id=${id}>
         <div class="card shadow-sm task__card">
             <div class="card-header d-flex justify-content-end  gap-2 task__card_header">
-                <button type="button" class="btn btn-outline-primary me-1.5" name=${id}>
-                    <i class="fas fa-pencil-alt" name=${id}></i>
+                <button type="button" class="btn btn-outline-primary me-1.5" name=${id} id=${id} onclick="edittask()">
+                    <i class="fas fa-pencil-alt" name=${id} id=${id} onclick="edittask()"></i>
                 </button>
                 
                 <button type="button" class="btn btn-outline-danger me-1.5" name=${id} onclick="deletion()">
@@ -40,8 +40,8 @@ const taskModal= document.querySelector(".task__modal_body");
 `;
 
 // Open Task Modal Dynamic Body
-const htmlModalContent=({id, title,description, url}) =>{
-    const date =new Date(parseInt(id));
+var htmlModalContent=({id, title,description, url}) =>{
+    var date =new Date(parseInt(id));
     return `
         <div id=${id}>
             ${ 
@@ -57,7 +57,7 @@ const htmlModalContent=({id, title,description, url}) =>{
 };
 
 // Updating Local Browser Storage
-const updateLocalStorage=() => {
+var updateLocalStorage=() => {
     localStorage.setItem(
         "task",
         JSON.stringify({
@@ -67,8 +67,8 @@ const updateLocalStorage=() => {
 };
 
 // Backup Storage
-const LoadInitialData = () => {
-    const localStoragecopy=JSON.parse(localStorage.task);
+var LoadInitialData = () => {
+    var localStoragecopy=JSON.parse(localStorage.task);
 
     if(localStoragecopy) state.taskList=localStoragecopy.tasks;
 
@@ -78,9 +78,9 @@ const LoadInitialData = () => {
 };
 
 // Add New Modal Button Function
-const handleSubmit=(event)=>{
-    const id =`${Date.now()}`;
-    const input={
+var handleSubmit=(event)=>{
+    var id =`${Date.now()}`;
+    var input={
         url:document.getElementById("imageurl").value,
         title:document.getElementById("tasktitle").value,
         type:document.getElementById("tasktype").value,
@@ -95,30 +95,119 @@ const handleSubmit=(event)=>{
 };
 
 // Open Task Button Function
-const opentask=(e)=>{
+var opentask=(e)=>{
     if(!e) e=window.event;
 
-    const gettask=state.taskList.find(({id})=> id===e.target.id);
+    var gettask=state.taskList.find(({id})=> id===e.target.id);
 
     taskModal.innerHTML=htmlModalContent(gettask);
 };
 
 // Deleting task
-const deletion =(e)=>{
+var deletion =(e)=>{
     if(!e) e=window.event;
 
-    const targetID = e.target.getAttribute("name");
-    const type = e.target.tagName;
-    const remove = state.taskList.filter(({id})=> id!==targetID);
+    var targetID = e.target.getAttribute("name");
+    var type = e.target.tagName;
+    var remove = state.taskList.filter(({id})=> id !==targetID);
     updateLocalStorage();
     if(type === "BUTTON"){
         return e.target.parentNode.parentNode.parentNode.parentNode.removeChild(
             e.target.parentNode.parentNode.parentNode
-        )
+        );
     }
-    else{
+    else if(type === "I"){
         return e.target.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(
             e.target.parentNode.parentNode.parentNode.parentNode
-        )
+        );
     }
+}
+
+// Edit Task
+var edittask=(e)=>{
+    if(!e) e=window.event;
+
+    var targetID = e.target.id;
+    var type = e.target.tagName;
+
+    let parentNode;
+    let taskTitle;
+    let taskType;
+    let taskDescription;
+    let submitbutton;
+    
+    if(type === "BUTTON"){
+        parentNode=e.target.parentNode.parentNode;
+    }
+    else if(type === "I"){
+        parentNode=e.target.parentNode.parentNode.parentNode;
+    }
+
+    taskTitle=parentNode.childNodes[3].childNodes[3];
+    taskDescription=parentNode.childNodes[3].childNodes[5];
+    taskType=parentNode.childNodes[3].childNodes[7].childNodes[1];
+    submitbutton=parentNode.childNodes[5].childNodes[1];
+
+    taskTitle.setAttribute("contenteditable","true");
+    taskDescription.setAttribute("contenteditable","true");
+    taskType.setAttribute("contenteditable","true");
+    submitbutton.setAttribute("onclick","saveEdit()");
+
+    submitbutton.removeAttribute("data-bs-toggle");
+    submitbutton.removeAttribute("data-bs-target");
+    submitbutton.innerHTML="Save Edit";
+};
+
+// Save Edit
+var saveEdit=(e)=>{
+    if(!e) e=window.event;
+
+    var targetID = e.target.id;
+    var parentNode = e.target.parentNode.parentNode;
+    var taskTitle = parentNode.childNodes[3].childNodes[3];
+    var taskDescription = parentNode.childNodes[3].childNodes[5];
+    var taskType = parentNode.childNodes[3].childNodes[7].childNodes[1];
+    var submitbutton = parentNode.childNodes[5].childNodes[1];
+
+    var updateData={
+        taskTitle:taskTitle.innerHTML,
+        taskDescription:taskDescription.innerHTML,
+        taskType:taskType.innerHTML
+    };
+
+    var statecopy=state.taskList;
+    statecopy=statecopy.map((task)=> task.id===targetID ? {
+        id:task.id,
+        title:updateData.taskTitle,
+        description:updateData.taskDescription,
+        type:updateData.taskType,
+        url:task.url,
+    }: task );
+
+    state.taskList=statecopy;
+    updateLocalStorage();
+
+    taskTitle.setAttribute("contenteditable","false");
+    taskDescription.setAttribute("contenteditable","false");
+    taskType.setAttribute("contenteditable","false");
+    submitbutton.setAttribute("onclick","opentask()");
+
+    submitbutton.setAttribute("data-bs-toggle","modal");
+    submitbutton.setAttribute("data-bs-target","#showTask");
+    submitbutton.innerHTML="Open Task";
+}
+
+// Search Task
+var searchTask=(e)=>{
+    if(!e) e=window.event;
+    
+    while (taskContent.firstChild) {
+        taskContent.removeChild(taskContent.firstChild);
+    };
+
+    var result = state.taskList.filter(({title})=> title.includes(e.target.value));
+
+    result.map((cardData)=> {
+        taskContent.insertAdjacentHTML("beforeend",htmlTaskContent(cardData));
+    });
 }
