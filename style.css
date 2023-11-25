@@ -20,5 +20,6 @@ body{
 @media only screen and (min-width:768px){
     .add__new_btn_mobile_only{
         display: none;
+        
     }
 }
